@@ -42,3 +42,6 @@ class SpaceRocks:
         self.spaceship.draw(self.screen)
         self.asteroid.draw(self.screen)
         pygame.display.flip()
+
+    def foo(self):
+        pass
