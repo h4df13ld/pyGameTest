@@ -1,11 +1,13 @@
+from turtle import position
 import pygame
 
-from utils import load_sprite
-from models import Spaceship, GameObject
+from utils import load_sprite, get_random_positon
+from models import Spaceship, Asteroid
 
 print(7 % 5)
 
 class SpaceRocks:
+    MIN_ASTEROID_DISTANCE = 125
 
     def __init__(self):
         self._init_pygame()
@@ -13,8 +15,19 @@ class SpaceRocks:
         self.background = load_sprite("space", False)
         self.clock = pygame.time.Clock()
         self.spaceship = Spaceship((400, 300))
-        # self.spaceship2 = GameObject((200, 200), load_sprite("ship"), (0, 0))
+        self.asteroids = []
 
+        self.setup_asteroids()
+
+    def setup_asteroids(self):
+        for _ in range(6):
+            position = get_random_positon(self.screen)
+            if position.distance_to(self.spaceship.position) < self.MIN_ASTEROID_DISTANCE:
+                break
+            self.asteroids.append(Asteroid(position))
+
+    def get_game_objects(self):
+        return [*self.asteroids, self.spaceship]
 
     def main_loop(self):
         while True:
@@ -43,14 +56,22 @@ class SpaceRocks:
             self.spaceship.rotate(clockwise=False)
         elif is_key_pressed[pygame.K_UP]:
             self.spaceship.accelerate()
+        elif is_key_pressed[pygame.K_DOWN]:
+            self.spaceship.decelerate()
 
     def game_logic(self):
-        self.spaceship.move(self.screen)
-        # self.spaceship2.move()
+        
+        for game_object in self.get_game_objects():
+            game_object.move(self.screen)
+            if isinstance(game_object, Spaceship):
+                game_object.natural_deceleration()
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))
-        self.spaceship.draw(self.screen)
-        # self.spaceship2.draw(self.screen)
+
+        for game_object in self.get_game_objects():
+            game_object.draw(self.screen)
+        
+        
         pygame.display.flip()
         self.clock.tick(60)

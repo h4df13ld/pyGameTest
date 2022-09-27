@@ -29,9 +29,8 @@ class GameObject:
 
 
 class Spaceship(GameObject):
-    MANEUVERABILITY = 3
+    MANEUVERABILITY = 5
     ACCELERATION = 0.25
-    SPACESHIP_POSITION = Vector2(1, 0.75)
 
     def __init__(self, position):
 
@@ -54,3 +53,23 @@ class Spaceship(GameObject):
 
     def accelerate(self):
         self.velocity += (self.direction) * self.ACCELERATION
+
+    def decelerate(self):
+        self.velocity -= (self.direction) * self.ACCELERATION
+
+    def natural_deceleration(self):
+        VELOCITY_MIN = 0.1
+        
+
+        self.velocity[0] *= 0.975
+        self.velocity[1] *= 0.975
+
+        if self.velocity[0] <= VELOCITY_MIN and self.velocity[0] >= -VELOCITY_MIN:
+            self.velocity[0] = 0
+        
+        if self.velocity[1] <= VELOCITY_MIN and self.velocity[1] >= -VELOCITY_MIN:
+            self.velocity[1] = 0
+
+class Asteroid(GameObject):
+    def __init__(self, position):
+        super().__init__(position, load_sprite("asteroid4"), (0, 0))
