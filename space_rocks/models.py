@@ -2,9 +2,9 @@ from turtle import distance
 from pygame.math import Vector2
 from pygame.transform import rotozoom
 
-from utils import load_sprite, wrap_position
+from utils import load_sprite, wrap_position, get_random_velocity
 
-UP = Vector2(1, 0)
+UP = Vector2(0, -1)
 
 class GameObject:
     def __init__(self, position, sprite, velocity):
@@ -31,10 +31,12 @@ class GameObject:
 class Spaceship(GameObject):
     MANEUVERABILITY = 5
     ACCELERATION = 0.25
+    LASER_SPEED = 3
 
-    def __init__(self, position):
+    def __init__(self, position, create_laser_callback):
+        self.create_laser_callback = create_laser_callback
 
-        super().__init__(position, load_sprite("ship"), Vector2(0))
+        super().__init__(position, load_sprite("ship2"), Vector2(0))
         self.direction = Vector2(UP)
 
 
@@ -70,6 +72,26 @@ class Spaceship(GameObject):
         if self.velocity[1] <= VELOCITY_MIN and self.velocity[1] >= -VELOCITY_MIN:
             self.velocity[1] = 0
 
+
+
+    def shoot(self):
+        laser_velocity = self.direction * self.LASER_SPEED + self.velocity
+
+
+        laser = Laser(self.position, laser_velocity)
+        self.create_laser_callback(laser)
+
+
 class Asteroid(GameObject):
     def __init__(self, position):
-        super().__init__(position, load_sprite("asteroid4"), (0, 0))
+        super().__init__(position, load_sprite("asteroid4"), get_random_velocity(1, 3))
+
+
+    def colides_with(self, other_object):
+        distance = self.position.distance_to(other_object.position)
+        return distance < (self.radius + other_object.radius) * 0.5
+
+
+class Laser(GameObject):
+    def __init__(self, position, velocity):
+        super().__init__(position, load_sprite("laser"), velocity)
