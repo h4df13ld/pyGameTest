@@ -118,7 +118,8 @@ class SpaceRocks:
         for game_object in self.get_game_objects():
             game_object.draw(self.screen)
 
-        print_health(self.screen, self.spaceship, self.health_font)
+        if self.spaceship:
+            print_health(self.screen, self.spaceship, self.health_font)
         
         if self.message:
             print_text(self.screen, self.message, self.text_font)
