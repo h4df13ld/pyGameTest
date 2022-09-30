@@ -77,8 +77,9 @@ class Spaceship(GameObject):
     def shoot(self):
         laser_velocity = self.direction * self.LASER_SPEED + self.velocity
 
-
-        laser = Laser(self.position, laser_velocity)
+        
+        direction = self.direction
+        laser = Laser(self.position, laser_velocity, self)
         self.create_laser_callback(laser)
 
 
@@ -93,5 +94,19 @@ class Asteroid(GameObject):
 
 
 class Laser(GameObject):
-    def __init__(self, position, velocity):
+    def __init__(self, position, velocity, spaceship):
         super().__init__(position, load_sprite("laser"), velocity)
+        self.spaceship = spaceship
+        self.direction = spaceship.direction
+
+        self.set_rotation()
+
+
+    def set_rotation(self):
+        angle = self.direction.angle_to(UP)
+        self.rotated_surface = rotozoom(self.sprite, angle, 1)
+        self.rotated_surface_size = Vector2(self.rotated_surface.get_size())
+
+    def draw(self, surface):
+        blit_position = self.position - self.rotated_surface_size * 0.5
+        surface.blit(self.rotated_surface, blit_position)
