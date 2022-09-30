@@ -2,6 +2,35 @@ import random
 
 from pygame.image import load
 from pygame.math import Vector2
+from pygame.mixer import Sound
+from pygame import Color
+
+
+
+def print_health(surface, spaceship, font, color=Color("limegreen")):
+    current_health = str(spaceship.health)
+    text = f"Health {current_health}/100"
+
+    text_surface = font.render(text, True, color)
+    rect = text_surface.get_rect()
+    rect.center = Vector2(700, 30)
+
+    surface.blit(text_surface, rect)
+
+
+def print_text(surface, text, font, color=Color("tomato")):
+    text_surface = font.render(text, True, color)
+
+    rect = text_surface.get_rect()
+    rect.center = Vector2(surface.get_size()) / 2
+
+    surface.blit(text_surface, rect)
+
+
+def load_sound(name):
+    path = f"assets/sounds/{name}.wav"
+    return Sound(path)
+
 
 def load_sprite(name, with_alpha=True):
     path = f"assets/sprites/{name}.png"
